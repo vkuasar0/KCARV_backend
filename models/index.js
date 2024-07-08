@@ -1,10 +1,6 @@
-const { Sequelize } = require('sequelize');
-const config = require('../config/config.json')['development'];
-
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-  host: config.host,
-  dialect: config.dialect
-});
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
+const sequelize = new Sequelize(process.env.DB_URL);
 
 const db = {};
 
@@ -12,10 +8,10 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Import models
-db.User = require('./user')(sequelize, Sequelize);
-db.PDItem = require('./pdItem')(sequelize, Sequelize);
-db.Event = require('./event')(sequelize, Sequelize);
-db.Announcement = require('./announcement')(sequelize, Sequelize);
+db.User = require("./user")(sequelize, Sequelize);
+db.PDItem = require("./pdItem")(sequelize, Sequelize);
+db.Event = require("./event")(sequelize, Sequelize);
+db.Announcement = require("./announcement")(sequelize, Sequelize);
 
 // Define associations here
 db.User.hasMany(db.Announcement);
