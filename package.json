@@ -1,0 +1,21 @@
+{
+  "name": "kcarv_back",
+  "version": "1.0.0",
+  "description": "Management app for KCARV",
+  "main": "app.js",
+  "scripts": {
+    "test": "nodemon app.js",
+    "build": "node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.10.2",
+    "sequelize": "^6.37.3"
+  }
+}
