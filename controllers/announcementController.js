@@ -25,3 +25,17 @@ exports.getAnnouncements = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.deleteAnnouncements = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const announcement = await Announcement.findByPk(id);
+    if (!announcement) {
+      return res.status(404).json({ message: "Announcement not found" });
+    }
+    await announcement.destroy();
+    res.status(204).send();
+  } catch (e) {
+    res.status(400).json({ error: error.message });
+  }
+}

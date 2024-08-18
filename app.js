@@ -47,6 +47,16 @@ app.get('/', (req, res) => {
         description: "Get a list of all production design items."
       },
       {
+        method: "PUT",
+        path: "/api/pd-items/:id",
+        description: "Edit an existing production design item by ID. Requires updated item details in the request body."
+      },
+      {
+        method: "DELETE",
+        path: "/api/pd-items/:id",
+        description: "Delete a production design item by ID."
+      },
+      {
         method: "POST",
         path: "/api/events",
         description: "Create a new event. Requires event details in the request body."
@@ -65,6 +75,11 @@ app.get('/', (req, res) => {
         method: "GET",
         path: "/api/announcements",
         description: "Get a list of all announcements."
+      },
+      {
+        method: "DELETE",
+        path: "/api/announcements/:id",
+        description: "Delete a specific announcement by ID."
       }
     ]
   });
