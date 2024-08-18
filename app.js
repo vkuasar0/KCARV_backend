@@ -7,6 +7,7 @@ const pdRoutes = require('./routes/pdRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
 const authRoutes = require('./routes/authRoutes');
+const borrowRoutes = require('./routes/borrowRoutes');
 
 const app = express();
 app.use(bodyParser.json());
@@ -80,20 +81,43 @@ app.get('/', (req, res) => {
         method: "DELETE",
         path: "/api/announcements/:id",
         description: "Delete a specific announcement by ID."
+      },
+      {
+        method: "POST",
+        path: "/api/borrow",
+        description: "Request to borrow an item. Requires itemId in the request body."
+      },
+      {
+        method: "PUT",
+        path: "/api/borrow/approve/:requestId",
+        description: "Approve a borrow request by ID (Admin only)."
+      },
+      {
+        method: "PUT",
+        path: "/api/borrow/reject/:requestId",
+        description: "Reject a borrow request by ID (Admin only)."
+      },
+      {
+        method: "PUT",
+        path: "/api/borrow/return/:requestId",
+        description: "Return a borrowed item by request ID."
+      },
+      {
+        method: "GET",
+        path: "/api/borrow",
+        description: "Get a list of all borrow requests (Admin only)."
       }
     ]
   });
 });
 
-// Authentication Routes
 app.use('/api', authRoutes);
-
-// Other Routes
 app.use('/api', adminRoutes);
 app.use('/api', memberRoutes);
 app.use('/api', pdRoutes);
 app.use('/api', eventRoutes);
 app.use('/api', announcementRoutes);
+app.use('/api', borrowRoutes);
 
 const PORT = process.env.PORT || 3000;
 
