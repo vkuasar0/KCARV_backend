@@ -16,6 +16,8 @@ exports.requestBorrow = async (req, res) => {
       return res.status(400).json({ message: 'Item is already borrowed' });
     }
 
+    await item.update({ isBorrowed: true});
+
     const borrowRequest = await BorrowRequest.create({
       userId,
       itemId,
@@ -24,7 +26,6 @@ exports.requestBorrow = async (req, res) => {
 
     res.status(201).json(borrowRequest);
   } catch (error) {
-    console.log("Error here")
     res.status(500).json({ message: error.message });
   }
 };
