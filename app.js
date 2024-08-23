@@ -8,6 +8,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
 const authRoutes = require('./routes/authRoutes');
 const borrowRoutes = require('./routes/borrowRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 app.use(bodyParser.json());
@@ -132,6 +133,7 @@ app.get('/', (req, res) => {
   );
 });
 
+app.use('/api', userRoutes);
 app.use('/api', authRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', memberRoutes);
