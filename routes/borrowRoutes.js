@@ -1,5 +1,5 @@
 const express = require('express');
-const { requestBorrow, approveRequest, rejectRequest, returnItem, getAllBorrowRequests } = require('../controllers/borrowController');
+const { requestBorrow, approveRequest, rejectRequest, returnItem, getAllBorrowRequests, getUserBorrowRequests, deleteRequest } = require('../controllers/borrowController');
 const { authenticateUser, isAdmin } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
@@ -16,5 +16,9 @@ router.put('/borrow/reject/:requestId', authenticateUser, isAdmin, rejectRequest
 router.put('/borrow/return/:requestId', authenticateUser, returnItem);
 
 router.get('/borrow', authenticateUser, isAdmin, getAllBorrowRequests);
+
+router.get('/borrow/user', authenticateUser, getUserBorrowRequests);
+
+router.delete('/borrow/:requestId', authenticateUser, deleteRequest);
 
 module.exports = router;

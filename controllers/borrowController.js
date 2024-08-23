@@ -80,7 +80,6 @@ exports.rejectRequest = async (req, res) => {
     // Update the request status to rejected
     await borrowRequest.update({ status: 'rejected' });
     await borrowRequest.item.update({ isBorrowed: false});
-    await borrowRequest.destroy();
 
     res.status(200).json(borrowRequest);
   } catch (error) {
@@ -111,12 +110,57 @@ exports.returnItem = async (req, res) => {
   }
 };
 
+exports.deleteRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const userId = req.user.id;
+
+    const borrowRequest = await BorrowRequest.findByPk(requestId, {
+      include: ['item']
+    });
+
+    if (!borrowRequest || borrowRequest.status !== 'rejected') {
+      return res.status(404).json({ message: 'Borrow Request is not rejected' });
+    }
+
+    if(borrowRequest.userId !== userId) {
+      return res.status(403).json({ message: 'Cannot delete others requests' });
+    }
+
+    // Mark the item as not borrowed
+    await borrowRequest.item.update({ isBorrowed: false });
+    await borrowRequest.destroy();
+
+    res.status(200).json({ message: 'Request deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getAllBorrowRequests = async (req, res) => {
   try {
     const borrowRequests = await BorrowRequest.findAll({
       include: [
         { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
         { model: PDItem, as: 'item', attributes: ['id', 'name', 'description'] }
+      ]
+    });
+
+    res.status(200).json(borrowRequests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getUserBorrowRequests = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const borrowRequests = await BorrowRequest.findAll({
+      where: { userId }, // Filter by the authenticated user's ID
+      include: [
+        { model: PDItem, as: 'item', attributes: ['id', 'name', 'description'] },
+        { model: User, as: 'user', attributes: ['id', 'name'] }
       ]
     });
 
