@@ -16,7 +16,7 @@ exports.requestBorrow = async (req, res) => {
       return res.status(400).json({ message: 'Item is already borrowed' });
     }
 
-    await item.update({ isBorrowed: true});
+    await item.update({ isBorrowed: true });
 
     const borrowRequest = await BorrowRequest.create({
       userId,
@@ -51,13 +51,6 @@ exports.approveRequest = async (req, res) => {
       return res.status(404).json({ message: 'Associated item not found' });
     }
 
-    if (borrowRequest.item.isBorrowed) {
-      return res.status(400).json({ message: 'Item is already borrowed' });
-    }
-
-    // Mark the item as borrowed
-    await borrowRequest.item.update({ isBorrowed: true });
-
     // Update the request status to approved
     await borrowRequest.update({ status: 'approved' });
 
@@ -72,7 +65,9 @@ exports.rejectRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
 
-    const borrowRequest = await BorrowRequest.findByPk(requestId);
+    const borrowRequest = await BorrowRequest.findByPk(requestId,{
+      include: [{ model: PDItem, as: 'item' }]
+    });
 
     if (!borrowRequest) {
       return res.status(404).json({ message: 'Borrow request not found' });
@@ -84,6 +79,8 @@ exports.rejectRequest = async (req, res) => {
 
     // Update the request status to rejected
     await borrowRequest.update({ status: 'rejected' });
+    await borrowRequest.item.update({ isBorrowed: false});
+    await borrowRequest.destroy();
 
     res.status(200).json(borrowRequest);
   } catch (error) {
@@ -106,6 +103,7 @@ exports.returnItem = async (req, res) => {
 
     // Mark the item as not borrowed
     await borrowRequest.item.update({ isBorrowed: false });
+    await borrowRequest.destroy();
 
     res.status(200).json({ message: 'Item returned successfully' });
   } catch (error) {
