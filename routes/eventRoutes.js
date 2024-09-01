@@ -5,9 +5,13 @@ const {
   addParticipants,
   getEventById,
   markEventAsComplete,
-  updateEventLibrary
+  updateEventLibrary,
+  uploadEventThumbnail
 } = require('../controllers/eventController');
+const multer = require('multer');
 const router = express.Router();
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Create a new event
 router.post('/events', createEvent);
@@ -26,5 +30,7 @@ router.put('/events/:id/complete', markEventAsComplete);
 
 // Update the event library
 router.put('/events/:id/library', updateEventLibrary);
+
+router.post('/events/:id/thumbnail', upload.single('thumbnail'), uploadEventThumbnail);
 
 module.exports = router;

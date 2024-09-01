@@ -1,4 +1,6 @@
 const { Event } = require('../models');
+const { bucket } = require('../firebase');
+const { v4: uuidv4 } = require('uuid');
 
 exports.createEvent = async (req, res) => {
   try {
@@ -99,6 +101,53 @@ exports.updateEventLibrary = async (req, res) => {
     await event.update({ library });
 
     res.status(200).json(event);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.uploadEventThumbnail = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const event = await Event.findByPk(id);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Generate a unique filename for the image
+    const fileName = `thumbnails/${uuidv4()}_${req.file.originalname}`;
+    const file = bucket.file(fileName);
+
+    // Create a stream to upload the file
+    const stream = file.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype
+      }
+    });
+
+    stream.on('error', (error) => {
+      return res.status(500).json({ message: 'Error uploading file', error });
+    });
+
+    stream.on('finish', async () => {
+      // Make the file publicly accessible
+      await file.makePublic();
+
+      // Get the public URL of the file
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+
+      // Update the event with the thumbnail URL
+      await event.update({ thumbnail: publicUrl });
+
+      res.status(200).json({ message: 'Thumbnail uploaded successfully', thumbnailUrl: publicUrl });
+    });
+
+    stream.end(req.file.buffer);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     participants: {
-      type: DataTypes.JSON, // Storing participants as an array of user IDs or objects
+      type: DataTypes.JSON,
       allowNull: true,
       defaultValue: []
     },
     library: {
-      type: DataTypes.JSON, // Storing library content as an array of URLs or files
+      type: DataTypes.JSON,
       allowNull: true,
       defaultValue: []
     },
@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('ongoing', 'complete'),
       allowNull: false,
       defaultValue: 'ongoing'
+    },
+    thumbnail: {
+      type: DataTypes.STRING, // URL to the thumbnail image
+      allowNull: true
     }
   });
 
